@@ -8,19 +8,17 @@ Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://
 
 Follow these steps to set up the project locally:
 
-1. Clone the Repository
-git clone https://github.com/your-username/burger-main.git
-cd burger-main
-2. Install Dependencies
+1. Clone or download the project
+2. Navigate to the project directory
+3. Install Dependencies
 npm install
-3. Fix Vulnerabilities (Optional)
+4. Fix Vulnerabilities (Optional)
 If there are vulnerabilities, you can auto-fix them using:
-
 npm audit fix --force
-4. Install Vite (if not already installed)
+5. Install Vite (if not already installed)
 npm install vite
-5. Run the Development Server
+6. Run the Development Server
 npm run dev
-After running the command, open your browser and go to:
 
+After running the command, open your browser and go to:
 http://localhost:5173/
