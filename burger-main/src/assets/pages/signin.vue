@@ -7,39 +7,40 @@
         class="w-40 h-40 md:w-64 md:h-64 object-contain mb-2 mx-auto"
       />
       <h2 class="text-amber-950 text-3xl font-semibold font-['Poppins'] font-poppins mb-8 text-center w-full">Sign In</h2>
-      
-      <form class="w-full max-w-md flex flex-col gap-4 mx-auto" @submit.prevent="handleLogin">
+
+      <form class="w-full max-w-md flex flex-col gap-4 mx-auto" @submit.prevent="login">
         <div class="w-full flex flex-col items-center">
           <div class="w-80">
             <label class="block text-amber-950 text-lg font-medium font-['Inter'] mb-2 text-left">Email</label>
-            <TypeBox v-model="email" placeholder="Enter your email" type="email" />
+            <input
+              v-model="email"
+              type="email"
+              placeholder="Enter your email"
+              class="w-full p-2 border border-gray-300 rounded"
+            />
           </div>
         </div>
 
         <div class="w-full flex flex-col items-center">
           <div class="w-80">
             <label class="block text-amber-950 text-lg font-medium font-['Inter'] mb-2 text-left">Password</label>
-            <TypeBox v-model="password" placeholder="Enter your password" type="password" />
-          </div>
-        </div>
-
-        <div class="w-full flex flex-col items-center">
-          <div class="w-80">
-            <label class="block text-amber-950 text-lg font-medium font-['Inter'] mb-2 text-left">Role</label>
-            <select v-model="role" class="w-full p-2 border border-gray-300 rounded">
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-              <option value="staff">Staff</option>
-            </select>
+            <input
+              v-model="password"
+              type="password"
+              placeholder="Enter your password"
+              class="w-full p-2 border border-gray-300 rounded"
+            />
           </div>
         </div>
 
         <div class="mt-4 w-full flex justify-center">
-          <button type="submit">
-            <SignButton />
+          <button type="submit" class="bg-amber-800 hover:bg-amber-900 text-white px-6 py-2 rounded font-semibold">
+            Sign In
           </button>
         </div>
       </form>
+
+      <p v-if="error" class="text-red-600 mt-4 text-sm font-poppins">{{ error }}</p>
 
       <div class="flex flex-col md:flex-row items-center justify-center gap-2 mt-6 w-full max-w-md mx-auto text-center">
         <span class="text-amber-950/70 text-sm font-normal font-poppins">Don’t have an account yet?</span>
@@ -52,31 +53,38 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
-import TypeBox from '../../components/typebox.vue';
-import SignButton from '../../components/signbutton.vue';
-import { useRouter } from 'vue-router';
+<script>
+import { users } from '../../data/users.js';
 
-const email = ref('');
-const password = ref('');
-const role = ref('user');
+export default {
+  data() {
+    return {
+      email: '',
+      password: '',
+      error: ''
+    };
+  },
+  methods: {
+    login() {
+      const user = users.find(
+        u => u.email === this.email && u.password === this.password
+      );
 
-const router = useRouter();
-
-function goToSignup() {
-  router.push('/signup');
-}
-
-function handleLogin() {
-  alert(`Logged in as ${role.value}`);
-  if (role.value === 'admin') {
-    router.push('/admin');
-  } else if (role.value === 'staff') {
-    router.push('/staff');
-  } else {
-    router.push('/landing');
+      if (user) {
+        if (user.role === 'admin') {
+          this.$router.push('/admin');
+        } else if (user.role === 'staff') {
+          this.$router.push('/staff');
+        } else {
+          this.$router.push('/menu');
+        }
+      } else {
+        this.error = 'Invalid email or password.';
+      }
+    },
+    goToSignup() {
+      this.$router.push('/signup');
+    }
   }
-}
-
+};
 </script>
