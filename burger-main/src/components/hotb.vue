@@ -12,14 +12,16 @@
       sm:h-60 md:w-[370px] 
       md:h-80 lg:w-[410px] lg:h-96" />
     <div class="absolute flex justify-center items-center left-0 top-0 w-full h-60 sm:h-60 md:h-80 lg:h-96 cursor-pointer" @click="showModal = true">
-      <img class="object-cover w-56 h-60 sm:w-56 sm:h-60 md:w-64 md:h-80 lg:w-65 lg:h-96" src="/images/menu/b7.png" alt="burger" />
+      <img class="object-cover w-56 h-60 sm:w-56 sm:h-60 md:w-64 md:h-80 lg:w-65 lg:h-96" :src="imgSrc" alt="burger" />
     </div>
     <!-- Title -->
-    <div class="absolute left-[17px] top-[340px] sm:left-[17px] sm:top-[340px] md:left-[22px] md:top-[410px] lg:left-[27px] lg:top-[449px] justify-start text-amber-950 text-xl md:text-2xl font-semibold font-['Inter']">Ultimate Cheddar Smash</div>
+    <div class="absolute left-[17px] top-[340px] sm:left-[17px] sm:top-[340px] md:left-[22px] md:top-[410px] lg:left-[27px] lg:top-[449px] justify-start text-amber-950 text-xl md:text-2xl font-semibold font-['Inter']">{{ title }}</div>
     <!-- Description -->
-    <div class="absolute w-72 h-14 left-[17px] top-[375px] sm:w-72 sm:h-14 sm:left-[17px] sm:top-[375px] md:w-80 md:h-16 md:left-[22px] md:top-[454px] lg:w-96 lg:h-16 lg:left-[27px] lg:top-[494px] justify-start text-amber-950 text-sm md:text-base font-normal font-['Inter']">Two flame-grilled beef patties smothered in melted cheddar, layered with pickles, grilled onions, and signature sauce on a toasted sesame bun.</div>
+    <div class="absolute w-72 h-14 left-[17px] top-[375px] sm:w-72 sm:h-14 sm:left-[17px] sm:top-[375px] md:w-80 md:h-16 md:left-[22px] md:top-[454px] lg:w-96 lg:h-16 lg:left-[27px] lg:top-[494px] justify-start text-amber-950 text-sm md:text-base font-normal font-['Inter']">{{ desc }}</div>
     <!-- Price -->
-    <div class="absolute left-[17px] top-[455px] sm:left-[17px] sm:top-[455px] md:left-[22px] md:top-[550px] lg:left-[27px] lg:top-[596px] justify-start text-amber-500 text-2xl md:text-3xl font-semibold font-['Inter']">₱250.00</div>
+    <div class="absolute left-[17px] top-[455px] sm:left-[17px] sm:top-[455px] md:left-[22px] md:top-[550px] lg:left-[27px] lg:top-[596px] justify-start text-amber-500 text-2xl md:text-3xl font-semibold font-['Inter']">
+      {{ symbol }}{{ formattedPrice }}
+    </div>
     <!-- Star and rating -->
     <div class="flex items-center absolute left-[260px] top-[345px] sm:left-[260px] sm:top-[345px] md:left-[320px] md:top-[415px] lg:left-[380px] lg:top-[455px]">
       <span class="w-5 h-5 text-yellow-400 text-xl flex items-center justify-center">⭐</span>
@@ -44,16 +46,17 @@
       <img src="/images/plus.png" alt="plus" class="w-4 h-4 object-contain flex items-center justify-center" />
       <span class="justify-start text-white text-base md:text-lg font-medium font-['Inter']">Add Order</span>
     </button>
+
     <!-- Modal -->
     <teleport to="body">
       <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
         <div class="bg-white rounded-2xl p-6 max-w-xs w-full flex flex-col items-center relative">
           <button @click="showModal = false" class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-xl">&times;</button>
           <div class="flex justify-center items-center w-full mb-4">
-            <img src="/images/menu/b7.png" alt="item" class="w-40 h-40 object-contain" />
+            <img :src="imgSrc" alt="item" class="w-40 h-40 object-contain" />
           </div>
-          <div class="font-semibold text-amber-950 text-base mb-2">Ultimate Cheddar Smash</div>
-          <div class="text-xs text-amber-950 mb-2">Two flame-grilled beef patties smothered in melted cheddar, layered with pickles, grilled onions, and signature sauce on a toasted sesame bun.</div>
+          <div class="font-semibold text-amber-950 text-base mb-2">{{ title }}</div>
+          <div class="text-xs text-amber-950 mb-2">{{ desc }}</div>
         </div>
       </div>
     </teleport>
@@ -61,14 +64,30 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+
+const props = defineProps({
+  price: [String, Number],     // passed-in converted price
+  symbol: String               // passed-in currency symbol
+});
+
+const imgSrc = '/images/menu/b7.png';
+const title = 'Ultimate Cheddar Smash';
+const desc = 'Two flame-grilled beef patties smothered in melted cheddar, layered with pickles, grilled onions, and signature sauce on a toasted sesame bun.';
+
+const formattedPrice = computed(() => {
+  const priceNumber = Number(props.price);
+  return props.symbol === '₩' ? priceNumber.toLocaleString() : priceNumber.toFixed(2);
+});
+
 const showModal = ref(false);
 const emit = defineEmits(['add-order']);
+
 function addOrder() {
   emit('add-order', {
-    imgSrc: '/images/menu/b7.png',
-    title: 'Ultimate Cheddar Smash',
-    price: 250,
+    imgSrc,
+    title,
+    price: Number(props.price),
     qty: 1
   });
 }
