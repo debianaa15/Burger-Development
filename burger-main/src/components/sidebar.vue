@@ -8,12 +8,14 @@
       :total="total"
       :address="address"
       :contact="contact"
+      :symbol="symbol"
       @closeCheckout="showCheckout = false"
       @update:address="val => address = val"
       @update:contact="val => contact = val"
       @checkout="onCheckoutSidebar"
       @show-history="showHistory = true"
     ></newsidebar>
+
     <div v-else-if="showHistory" class="w-[350px] h-full relative bg-white shadow-[-2px_4px_6px_-1px_rgba(0,0,0,0.10)] shadow-[-2px_2px_4px_-2px_rgba(0,0,0,0.10)] outline outline-[0.75px] outline-offset-[-0.75px] outline-stone-200 overflow-hidden">
       <!-- Header -->
       <div class="left-[20px] top-[23px] absolute text-amber-950 text-3xl font-semibold font-['Inter']">My Cart</div>
@@ -29,6 +31,7 @@
         />
       </div>
     </div>
+
     <div v-else class="w-[380px] h-full relative bg-white shadow-[-2px_4px_6px_-1px_rgba(0,0,0,0.10)] shadow-[-2px_2px_4px_-2px_rgba(0,0,0,0.10)] outline outline-[0.75px] outline-offset-[-0.75px] outline-stone-200 overflow-hidden">
       <!-- Header -->
       <div class="left-[20px] top-[23px] absolute text-amber-950 text-3xl font-semibold font-['Inter']">My Cart</div>
@@ -55,7 +58,7 @@
               <img class="w-4 h-4 cursor-pointer" src="/images/del.png" alt="remove" @click="$emit('remove', item)" />
             </div>
             <div class="flex justify-between items-center mt-1">
-              <div class="text-amber-500 text-sm font-medium font-['Inter']">₱{{ item.price }}</div>
+              <div class="text-amber-500 text-sm font-medium font-['Inter']">{{ symbol }}{{ item.price.toFixed(2) }}</div>
               <div class="flex items-center">
                 <button class="w-5 h-5 bg-white rounded-sm flex items-center justify-center cursor-pointer mr-1 border border-amber-200" @click="$emit('decrement', item)"><span class="text-lg leading-none">-</span></button>
                 <div class="text-center text-amber-950 text-sm font-semibold font-['Inter'] w-6">{{ item.qty }}</div>
@@ -65,23 +68,24 @@
           </div>
         </div>
       </div>
-      <!-- Payment Summary and Place Order always fixed at the bottom -->
+
+      <!-- Payment Summary -->
       <div v-if="cart.length > 0" class="w-full absolute left-0 bottom-0 z-40 px-3 pb-4">
         <div class="w-[344px] mx-auto">
           <div class="bg-stone-100 rounded-[10px] border-2 border-dotted border-amber-900 p-5 mb-2">
             <div class="text-amber-900 text-lg font-medium mb-3">Payment Summary</div>
             <div class="flex justify-between items-center mb-1">
               <span class="text-amber-900/80 text-base font-normal">Sub Total</span>
-              <span class="text-amber-900/80 text-base font-semibold">₱{{ subtotal.toFixed(2) }}</span>
+              <span class="text-amber-900/80 text-base font-semibold">{{ symbol }}{{ subtotal.toFixed(2) }}</span>
             </div>
             <div class="flex justify-between items-center mb-2">
               <span class="text-amber-900/80 text-base font-normal">Shipping Fee</span>
-              <span class="text-amber-900/80 text-base font-semibold">₱{{ shippingFee.toFixed(2) }}</span>
+              <span class="text-amber-900/80 text-base font-semibold">{{ symbol }}{{ shippingFee.toFixed(2) }}</span>
             </div>
             <div class="border-t border-amber-900/30 my-2"></div>
             <div class="flex justify-between items-center mt-2">
               <span class="text-amber-900 text-base font-semibold">Total Payment</span>
-              <span class="text-amber-900 text-base font-semibold">₱{{ total.toFixed(2) }}</span>
+              <span class="text-amber-900 text-base font-semibold">{{ symbol }}{{ total.toFixed(2) }}</span>
             </div>
           </div>
           <button class="w-full h-12 bg-red-600 rounded-full text-white text-lg font-medium font-['Inter'] hover:bg-red-700 transition-colors" @click="showCheckout = true">Place Order</button>
@@ -95,18 +99,18 @@
 import { ref, computed, onMounted } from 'vue';
 import newsidebar from './newsidebar.vue';
 import HistoryComponent from './history.vue';
+
 const showCheckout = ref(false);
 const showHistory = ref(false);
 const address = ref('');
 const contact = ref('');
+
 const props = defineProps({
-  cart: {
-    type: Array,
-    default: () => []
-  },
-  history: {
-    type: Array,
-    default: () => []
+  cart: Array,
+  history: Array,
+  symbol: {
+    type: String,
+    default: '₱'
   }
 });
 
@@ -118,18 +122,17 @@ function updateDateTime() {
   currentDate.value = now.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
   currentTime.value = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
 }
+
 onMounted(() => {
   updateDateTime();
   setInterval(updateDateTime, 1000);
 });
-
 
 const subtotal = computed(() => props.cart.reduce((sum, item) => sum + item.price * item.qty, 0));
 const shippingFee = computed(() => props.cart.length > 0 ? 20 : 0);
 const total = computed(() => subtotal.value + shippingFee.value);
 
 function onCheckoutSidebar() {
-  // Always emit the current cart from props
   if (props.cart && props.cart.length > 0) {
     emit('checkout', props.cart);
   }
@@ -137,5 +140,3 @@ function onCheckoutSidebar() {
 
 const emit = defineEmits(['remove', 'increment', 'decrement', 'checkout', 'reorder']);
 </script>
-
-
