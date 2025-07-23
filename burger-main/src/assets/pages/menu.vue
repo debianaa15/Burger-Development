@@ -58,13 +58,13 @@
         <div class="flex w-full gap-4 justify-start 2xl:pl-[18rem]">
           <!-- Hot Burger Section -->
           <div class="flex-shrink-0">
-            <hotb @add-order="addToCart" :symbol="currencySymbols[currency]" />
+            <hotb @add-order="addToCart" />
           </div>
           <!-- Product Items -->
           <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-2 self-start">
             <item
               v-for="(menu, idx) in menus"
-              :key="`${idx}-${currency}`"
+              :key="idx"
               :img-src="menu.imgSrc"
               :title="menu.title"
               :desc="menu.desc"
@@ -148,11 +148,10 @@ onMounted(fetchRates);
 
 const menus = computed(() => {
   const rate = exchangeRates.value[currency.value];
-  const symbol = currencySymbols[currency.value];
   return products.map(p => ({
     ...p,
     convertedPrice: Math.round(p.price * rate),
-    symbol: symbol
+    symbol: currencySymbols[currency.value]
   }));
 });
 

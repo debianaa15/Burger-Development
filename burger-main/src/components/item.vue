@@ -32,7 +32,7 @@
       </div>
     </div>
   </teleport>
-    <div class="left-[15px] top-[179px] absolute justify-start text-amber-500 text-sm font-semibold font-['Inter']">₱{{ price }}</div>
+    <div class="left-[15px] top-[179px] absolute justify-start text-amber-500 text-sm font-semibold font-['Inter']">{{ symbol }}{{ price }}</div>
     <button class="w-28 h-6 sm:w-20 sm:h-6 md:w-28 md:h-6 p-2.5 left-[90px] top-[176px] absolute bg-red-600 rounded-3xl inline-flex justify-center items-center gap-1.5" @click="addOrder">
       <img class="w-2 h-2" src="/images/plus.png" />
       <div class="justify-start text-white text-[11px] font-semibold font-['Inter']">Add Order</div>
@@ -47,6 +47,7 @@ const props = defineProps({
   title: String,
   desc: String,
   price: [String, Number],
+  symbol: String,
   isNew: Boolean
 });
 
