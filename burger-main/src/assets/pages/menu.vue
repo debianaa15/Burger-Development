@@ -58,7 +58,7 @@
         <div class="flex w-full gap-4 justify-start 2xl:pl-[18rem]">
           <!-- Hot Burger Section -->
           <div class="flex-shrink-0">
-            <hotb @add-order="addToCart" />
+            <hotb :price="250 * exchangeRates[currency]" :symbol="currencySymbols[currency]" @add-order="addToCart" />
           </div>
           <!-- Product Items -->
           <div class="grid gap-4 sm:grid-cols-1 md:grid-cols-2 2xl:grid-cols-2 self-start">
